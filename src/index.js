@@ -100,6 +100,7 @@ class Game extends React.Component {
       stepNumber: step,
       xIsNext: (step%2)? false:true,
     })
+
   }
 
   render() {
@@ -111,6 +112,13 @@ class Game extends React.Component {
       const desc = move?
       'Move #'+move:
       'Game Start';
+      if(move === this.state.stepNumber){
+        return (
+          <li key={move}>
+            <a href="#" onClick={()=> this.jumpTo(move)} className="current" >{desc}</a>
+          </li>
+        );
+      }
       return (
         <li key={move}>
           <a href="#" onClick={()=> this.jumpTo(move)}>{desc}</a>

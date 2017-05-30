@@ -45,7 +45,7 @@ class Board extends React.Component {
 
   render() {
     let board = [[0,1,2],[3,4,5],[6,7,8]]
-    
+
     let my_dom = board.map((row,i) => {
       
       var k = row.map((ele,j)=>{
@@ -60,11 +60,7 @@ class Board extends React.Component {
     },this);
 
     return (
-      <div>
-        
-  
-        {my_dom}
-      </div>
+      <div>{my_dom}</div>
     );
   }
 }
@@ -78,6 +74,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext : true,
+      reverse : false,
     }
   }
 
@@ -108,8 +105,13 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-    
-    const moves = history.map((step,move) => {
+    const len = history.length
+
+
+    const moves = history.map((step,index) => {
+      let move = index
+      if(this.state.reverse)
+        move = len -1 -index;
       const desc = move?
       'Move #'+move:
       'Game Start';
@@ -125,7 +127,7 @@ class Game extends React.Component {
           <a href="#" onClick={()=> this.jumpTo(move)}>{desc}</a>
         </li>
       );
-    });
+    },this);
 
     let status;
     if(winner)
@@ -141,6 +143,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{ status }</div>
+          <button onClick={()=>{this.setState({reverse: !this.state.reverse})}}>toggle</button>
           <ol>{moves}</ol>
         </div>
       </div>

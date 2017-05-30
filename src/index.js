@@ -3,8 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css'
 
 function Square(props){
+    let list = ['square']
+    if(props.colored){
+      list.push('highlight')
+    }
     return (
-      <button className="square" onClick={() => props.onClick()}>
+      <button className={list.join(" ")} onClick={() => props.onClick()}>
         {props.value}
       </button>
     );
@@ -25,7 +29,7 @@ function calculateWinner(squares){
   for(let i=0; i< lines.length;i++){
     const [a,b,c] = lines[i];
     if(squares[a] && squares[a]===squares[b] && squares[a] === squares[c]){
-      return squares[a]
+      return [squares[a],[ a, b, c]]
     }
   }
   return null;
@@ -34,13 +38,20 @@ function calculateWinner(squares){
 class Board extends React.Component {
   
 
-  
+  renderSquare(ele) {
+    let highlight = false;
+    
+    if(this.props.win){
+      console.log(this.props.win)
+      if(ele === this.props.win[0] || ele === this.props.win[1] || ele === this.props.win[2] ){
+        highlight = true;
+      }
+    }
 
-  renderSquare(i) {
     return (
-      <Square
-      value={this.props.squares[i]}
-      onClick={()=>this.props.onClick(i)} />);
+      <Square colored={highlight}
+      value={this.props.squares[ele]}
+      onClick={()=>this.props.onClick(ele)} />);
   }
 
   render() {
@@ -75,6 +86,7 @@ class Game extends React.Component {
       stepNumber: 0,
       xIsNext : true,
       reverse : false,
+      
     }
   }
 
@@ -104,10 +116,14 @@ class Game extends React.Component {
   render() {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
-    const winner = calculateWinner(current.squares);
-    const len = history.length
 
-
+    const win_stats = calculateWinner(current.squares);
+    let winner = null;
+    let winning_array = null;
+    if(win_stats){ winner = win_stats[0]; winning_array = win_stats[1];}
+   
+    const len = history.length;
+    
     const moves = history.map((step,index) => {
       let move = index
       if(this.state.reverse)
@@ -138,8 +154,9 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className="game-board">
-          <Board squares={current.squares}
+          <Board squares={current.squares} win={winning_array}
             onClick={(i)=>this.handleClick(i)}/>
+          
         </div>
         <div className="game-info">
           <div>{ status }</div>
